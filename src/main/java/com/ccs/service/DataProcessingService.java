@@ -12,7 +12,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.ccs.entity.BulkImportInfoEntity;
+import com.ccs.entity.BulkImportModulesEntity;
 import com.ccs.repository.BulkImportInfoRepository;
+import com.ccs.repository.BulkImportModulesRepository;
 import com.ccs.utility.RecordNotFoundException;
 
 /**
@@ -27,8 +29,11 @@ public class DataProcessingService {
 	@Autowired
 	BulkImportInfoRepository bulkImportInfoRepository;
 
+	@Autowired
+	BulkImportModulesRepository  bulkImportModulesRepository;
+	
 	// @Scheduled(cron = "15 * 22 * * ?")
-	@Scheduled(fixedRate = 1 * 60 * 1000)
+	//@Scheduled(fixedRate = 1 * 60 * 1000)
 	public List<BulkImportInfoEntity> getAllBulkImportInfos() {
 
 		System.out.println("|||||||||||||||||||||==============Scheduled test==============|||||||||||||||||||||");
@@ -83,4 +88,24 @@ public class DataProcessingService {
 		}
 	}
 
+	public List<BulkImportModulesEntity> getAllBulkImportModules() {
+
+		List<BulkImportModulesEntity> bulkImportModulesEntity = bulkImportModulesRepository.findAll();
+
+		if (bulkImportModulesEntity.size() > 0) {
+			return bulkImportModulesEntity;
+		} else {
+			return new ArrayList<BulkImportModulesEntity>();
+		}
+	}
+	
+	public List<BulkImportInfoEntity> findByModulesIdFk(long modulesIdFk) {
+		List<BulkImportInfoEntity> bulkImportInfoEntity = bulkImportInfoRepository.findByModulesIdFk(modulesIdFk);
+
+		if (bulkImportInfoEntity.size() > 0) {
+			return bulkImportInfoEntity;
+		} else {
+			return new ArrayList<BulkImportInfoEntity>();
+		}
+	}
 }

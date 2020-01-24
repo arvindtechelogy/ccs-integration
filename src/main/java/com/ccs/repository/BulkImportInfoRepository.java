@@ -15,6 +15,6 @@ import com.ccs.entity.BulkImportInfoEntity;
  *
  */
 @Repository
-public interface BulkImportInfoRepository extends JpaRepository<BulkImportInfoEntity, Long> {
+public interface BulkImportInfoRepository extends JpaRepository<BulkImportInfoEntity, Long>, BulkImportInfoRepositoryCustom {
 
 }

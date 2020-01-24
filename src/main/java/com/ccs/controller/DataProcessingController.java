@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ccs.entity.BulkImportInfoEntity;
+import com.ccs.entity.BulkImportModulesEntity;
 import com.ccs.service.DataProcessingService;
 import com.ccs.utility.RecordNotFoundException;
 
@@ -60,4 +62,19 @@ public class DataProcessingController {
 		dataProcessingService.deleteBulkImportInfoById(id);
 		return HttpStatus.FORBIDDEN;
 	}
+
+	@GetMapping("/modules")
+	public ResponseEntity<List<BulkImportModulesEntity>> getAllBulkImportModules() {
+		List<BulkImportModulesEntity> list = dataProcessingService.getAllBulkImportModules();
+
+		return new ResponseEntity<List<BulkImportModulesEntity>>(list, new HttpHeaders(), HttpStatus.OK);
+	}
+
+	@GetMapping("/bulkInfoBymodulesid")
+	public ResponseEntity<List<BulkImportInfoEntity>> getBulkImportInfoByModulesIdFk(@RequestParam(required = false) Long modulesIdFk){
+		List<BulkImportInfoEntity> list = dataProcessingService.findByModulesIdFk(modulesIdFk);
+
+		return new ResponseEntity<List<BulkImportInfoEntity>>(list, new HttpHeaders(), HttpStatus.OK);
+	}
+
 }

@@ -11,6 +11,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -23,6 +25,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "bulk_import_info")
+@NamedQueries({
+	@NamedQuery(name="BulkImportInfoEntity.getAllByModules", query = "SELECT bi FROM BulkImportInfoEntity bi WHERE bi.bulkImportModulesEntity.id=:modulesIdFk")
+})
 public class BulkImportInfoEntity {
 
 	@Id
@@ -164,4 +169,12 @@ public class BulkImportInfoEntity {
 		this.bulkImportModulesEntity = bulkImportModulesEntity;
 	}
 
+	@Override
+	public String toString() {
+		return "BulkImportInfoEntity [id=" + id + ", fileName=" + fileName + ", uploadDate=" + uploadDate
+				+ ", processDate=" + processDate + ", status=" + status + ", result=" + result + ", remarks=" + remarks
+				+ ", bulkImportModulesEntity=" + bulkImportModulesEntity + "]";
+	}
+
+	
 }

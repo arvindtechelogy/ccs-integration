@@ -17,7 +17,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "bulk_import_modules")
+@Table(name = "modules_type")
 public class BulkImportModulesEntity {
 
 	@Id
@@ -124,4 +124,11 @@ public class BulkImportModulesEntity {
 		this.status = status;
 	}
 
+	@Override
+	public String toString() {
+		return "BulkImportModulesEntity [id=" + id + ", moduleName=" + moduleName + ", structure=" + structure
+				+ ", moduleDataType=" + moduleDataType + ", priority=" + priority + ", status=" + status + "]";
+	}
+	
+	
 }
