@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.ccs.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +14,6 @@ import com.ccs.entity.BulkImportModulesEntity;
 @Repository
 public interface BulkImportModulesRepository extends JpaRepository<BulkImportModulesEntity, Long> {
 
+	public BulkImportModulesEntity getBymoduleName(String moduleName);
+	
 }

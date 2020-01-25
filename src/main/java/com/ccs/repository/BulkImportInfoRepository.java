@@ -1,12 +1,12 @@
-/**
- * 
- */
 package com.ccs.repository;
+
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.ccs.entity.BulkImportInfoEntity;
+import com.ccs.entity.BulkImportModulesEntity;
 
 /**
  * @author Arvind Maurya
@@ -15,6 +15,9 @@ import com.ccs.entity.BulkImportInfoEntity;
  *
  */
 @Repository
-public interface BulkImportInfoRepository extends JpaRepository<BulkImportInfoEntity, Long> {
+public interface BulkImportInfoRepository extends JpaRepository<BulkImportInfoEntity, Long>{
+	
+	public List<BulkImportInfoEntity> getByBulkImportModulesEntity(BulkImportModulesEntity bulkImportModulesEntity);
 
+ 
 }

@@ -1,29 +1,37 @@
-/**
- * 
- */
 package com.ccs.entity;
 
+import java.io.Serializable;
 import java.sql.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.springframework.data.jpa.domain.AbstractPersistable;
+
 /**
  * @author Arvind Maurya
- * @since 2020-01-23
+ * @since 2020-01-24
  * @copyright 2020
  *
  */
-
 @Entity
 @Table(name = "bulk_import_info")
-public class BulkImportInfoEntity {
+@NamedQueries({
+	@NamedQuery(name="BulkImportInfoEntity.getAllByModules", query = "SELECT bi FROM BulkImportInfoEntity bi WHERE bi.bulkImportModulesEntity.id=:modulesIdFk")
+})
+public class BulkImportInfoEntity extends AbstractPersistable<Long> implements Serializable{
+	
+	private static final long serialVersionUID = -4111262654714672612L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,14 +56,41 @@ public class BulkImportInfoEntity {
 	@Column(name = "remarks")
 	private String remarks;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = BulkImportModulesEntity.class)
 	@JoinColumn(name = "modules_Id_fk")
 	private BulkImportModulesEntity bulkImportModulesEntity;
+
+	public BulkImportInfoEntity() {
+		super();
+	}
+
+	
+	/**
+	 * @param fileName
+	 * @param uploadDate
+	 * @param processDate
+	 * @param status
+	 * @param result
+	 * @param remarks
+	 * @param bulkImportModulesEntity
+	 */
+	public BulkImportInfoEntity(String fileName, Date uploadDate, Date processDate, int status, int result,
+			String remarks, BulkImportModulesEntity bulkImportModulesEntity) {
+		super();
+		this.fileName = fileName;
+		this.uploadDate = uploadDate;
+		this.processDate = processDate;
+		this.status = status;
+		this.result = result;
+		this.remarks = remarks;
+		this.bulkImportModulesEntity = bulkImportModulesEntity;
+	}
+
 
 	/**
 	 * @return the id
 	 */
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
@@ -164,4 +199,14 @@ public class BulkImportInfoEntity {
 		this.bulkImportModulesEntity = bulkImportModulesEntity;
 	}
 
+	@Override
+	public String toString() {
+		return "BulkImportInfoEntity [id=" + id + ", fileName=" + fileName + ", uploadDate=" + uploadDate
+				+ ", processDate=" + processDate + ", status=" + status + ", result=" + result + ", remarks=" + remarks
+				+ ", bulkImportModulesEntity=" + bulkImportModulesEntity + "]";
+	}
+
+
+
+	
 }

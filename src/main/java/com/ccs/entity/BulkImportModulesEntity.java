@@ -1,24 +1,31 @@
-/**
- * 
- */
 package com.ccs.entity;
+
+import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+
+import org.springframework.data.jpa.domain.AbstractPersistable;
 
 /**
  * @author Arvind Maurya
- * @since 2020-01-23
+ * @since 2020-01-24
  * @copyright 2020
  *
  */
+@SuppressWarnings("serial")
 @Entity
-@Table(name = "bulk_import_modules")
-public class BulkImportModulesEntity {
+@Table(name = "modules_type")
+@NamedQueries({
+	@NamedQuery(name="BulkImportModulesEntity.getAllBulkImportModules", query = "SELECT m FROM BulkImportModulesEntity m WHERE m.status=true order by m.priority")
+})
+public class BulkImportModulesEntity extends AbstractPersistable<Long> implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +34,9 @@ public class BulkImportModulesEntity {
 
 	@Column(name = "module_name")
 	private String moduleName;
+	
+	@Column(name="module_url_name")
+	private String moduleURLName;
 
 	@Column(name = "structure")
 	private String structure;
@@ -40,10 +50,36 @@ public class BulkImportModulesEntity {
 	@Column(name = "status")
 	private boolean status;
 
+	
+	public BulkImportModulesEntity() {
+		super();
+	}
+
+
+	/**
+	 * @param moduleName
+	 * @param moduleURLName
+	 * @param structure
+	 * @param moduleDataType
+	 * @param priority
+	 * @param status
+	 */
+	public BulkImportModulesEntity(String moduleName, String moduleURLName, String structure, int moduleDataType,
+			int priority, boolean status) {
+		super();
+		this.moduleName = moduleName;
+		this.moduleURLName = moduleURLName;
+		this.structure = structure;
+		this.moduleDataType = moduleDataType;
+		this.priority = priority;
+		this.status = status;
+	}
+
+
 	/**
 	 * @return the id
 	 */
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
@@ -66,6 +102,20 @@ public class BulkImportModulesEntity {
 	 */
 	public void setModuleName(String moduleName) {
 		this.moduleName = moduleName;
+	}
+
+	/**
+	 * @return the moduleURLName
+	 */
+	public String getModuleURLName() {
+		return moduleURLName;
+	}
+
+	/**
+	 * @param moduleURLName the moduleURLName to set
+	 */
+	public void setModuleURLName(String moduleURLName) {
+		this.moduleURLName = moduleURLName;
 	}
 
 	/**
@@ -124,4 +174,13 @@ public class BulkImportModulesEntity {
 		this.status = status;
 	}
 
+	@Override
+	public String toString() {
+		return "BulkImportModulesEntity [id=" + id + ", moduleName=" + moduleName + ", structure=" + structure
+				+ ", moduleDataType=" + moduleDataType + ", priority=" + priority + ", status=" + status + "]";
+	}
+
+
+	
+	
 }

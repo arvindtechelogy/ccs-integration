@@ -12,10 +12,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.EnableScheduling;
-
+/**
+ * @author Arvind Maurya
+ * @since 2020-01-23
+ * @copyright 2020
+ *
+ */
 @EnableScheduling
 @SpringBootApplication
 public class CcsIntegrationApplication {
