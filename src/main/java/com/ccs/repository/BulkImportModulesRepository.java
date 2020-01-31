@@ -1,9 +1,13 @@
 package com.ccs.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.ccs.entity.BulkImportModulesEntity;
+import com.ccs.entity.BulkImportInfoEntity;
 
 /**
  * @author Arvind Maurya
@@ -14,6 +18,7 @@ import com.ccs.entity.BulkImportModulesEntity;
 @Repository
 public interface BulkImportModulesRepository extends JpaRepository<BulkImportModulesEntity, Long> {
 
-	public BulkImportModulesEntity getBymoduleName(String moduleName);
-	
+	@Query("SELECT m FROM BulkImportModulesEntity m WHERE m.active=true order by m.priority")
+	List<BulkImportModulesEntity> getAllBulkImportModules();
+
 }

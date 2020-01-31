@@ -27,7 +27,7 @@ public class BulkImportDaoImpl implements BulkImportDao{
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<BulkImportModulesEntity> getAllBulkImportModules() {
+	public List<BulkImportModulesEntity> getAllBulkImportModules1() {
 		Query query = entityManager.createNamedQuery("BulkImportModulesEntity.getAllBulkImportModules");
         //query.setParameter("modulesIdFk", modulesIdFk);
         return query.getResultList();

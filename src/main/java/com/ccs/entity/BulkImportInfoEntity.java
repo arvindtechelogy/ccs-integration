@@ -1,7 +1,7 @@
 package com.ccs.entity;
 
-import java.io.Serializable;
-import java.sql.Date;
+
+import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,8 +15,12 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
-import org.springframework.data.jpa.domain.AbstractPersistable;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
 
 /**
  * @author Arvind Maurya
@@ -29,62 +33,32 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
 @NamedQueries({
 	@NamedQuery(name="BulkImportInfoEntity.getAllByModules", query = "SELECT bi FROM BulkImportInfoEntity bi WHERE bi.bulkImportModulesEntity.id=:modulesIdFk")
 })
-public class BulkImportInfoEntity extends AbstractPersistable<Long> implements Serializable{
-	
-	private static final long serialVersionUID = -4111262654714672612L;
-
+public class BulkImportInfoEntity{
+		
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
 	private long id;
 
-	@Column(name = "file_name")
 	private String fileName;
 
-	@Column(name = "upload_date")
+	@LastModifiedDate
 	private Date uploadDate;
-
-	@Column(name = "process_date")
+	
+	@CreatedDate
 	private Date processDate;
 
-	@Column(name = "status")
 	private int status;
-
-	@Column(name = "result")
+	
 	private int result;
 
-	@Column(name = "remarks")
 	private String remarks;
+	
+	private boolean active;
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = BulkImportModulesEntity.class)
 	@JoinColumn(name = "modules_Id_fk")
 	private BulkImportModulesEntity bulkImportModulesEntity;
 
-	public BulkImportInfoEntity() {
-		super();
-	}
-
-	
-	/**
-	 * @param fileName
-	 * @param uploadDate
-	 * @param processDate
-	 * @param status
-	 * @param result
-	 * @param remarks
-	 * @param bulkImportModulesEntity
-	 */
-	public BulkImportInfoEntity(String fileName, Date uploadDate, Date processDate, int status, int result,
-			String remarks, BulkImportModulesEntity bulkImportModulesEntity) {
-		super();
-		this.fileName = fileName;
-		this.uploadDate = uploadDate;
-		this.processDate = processDate;
-		this.status = status;
-		this.result = result;
-		this.remarks = remarks;
-		this.bulkImportModulesEntity = bulkImportModulesEntity;
-	}
 
 
 	/**
@@ -132,6 +106,8 @@ public class BulkImportInfoEntity extends AbstractPersistable<Long> implements S
 	/**
 	 * @return the processDate
 	 */
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(insertable = true, updatable = false)
 	public Date getProcessDate() {
 		return processDate;
 	}
@@ -186,6 +162,20 @@ public class BulkImportInfoEntity extends AbstractPersistable<Long> implements S
 	}
 
 	/**
+	 * @return the active
+	 */
+	public boolean isActive() {
+		return active;
+	}
+
+	/**
+	 * @param active the active to set
+	 */
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	/**
 	 * @return the bulkImportModulesEntity
 	 */
 	public BulkImportModulesEntity getBulkImportModulesEntity() {
@@ -201,12 +191,40 @@ public class BulkImportInfoEntity extends AbstractPersistable<Long> implements S
 
 	@Override
 	public String toString() {
-		return "BulkImportInfoEntity [id=" + id + ", fileName=" + fileName + ", uploadDate=" + uploadDate
-				+ ", processDate=" + processDate + ", status=" + status + ", result=" + result + ", remarks=" + remarks
-				+ ", bulkImportModulesEntity=" + bulkImportModulesEntity + "]";
+		return "BulkImportInfoEntity [fileName=" + fileName + ", uploadDate=" + uploadDate + ", processDate="
+				+ processDate + ", status=" + status + ", result=" + result + ", remarks=" + remarks + ", active="
+				+ active + ", bulkImportModulesEntity=" + bulkImportModulesEntity + "]";
+	}
+
+	/**
+	 * @param fileName
+	 * @param uploadDate
+	 * @param processDate
+	 * @param status
+	 * @param result
+	 * @param remarks
+	 * @param active
+	 * @param bulkImportModulesEntity
+	 */
+	public BulkImportInfoEntity(String fileName, Date uploadDate, Date processDate, int status, int result,
+			String remarks, boolean active, BulkImportModulesEntity bulkImportModulesEntity) {
+		super();
+		this.fileName = fileName;
+		this.uploadDate = uploadDate;
+		this.processDate = processDate;
+		this.status = status;
+		this.result = result;
+		this.remarks = remarks;
+		this.active = active;
+		this.bulkImportModulesEntity = bulkImportModulesEntity;
+	}
+
+	/**
+	 * 
+	 */
+	public BulkImportInfoEntity() {
+		super();
 	}
 
 
-
-	
 }

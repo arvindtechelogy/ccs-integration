@@ -1,24 +1,26 @@
 package com.ccs.service.impl;
 
 import java.io.File;
-import java.sql.Date;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ccs.dao.BulkImportDao;
 import com.ccs.entity.BulkImportInfoEntity;
 import com.ccs.entity.BulkImportModulesEntity;
 import com.ccs.repository.BulkImportInfoRepository;
 import com.ccs.repository.BulkImportModulesRepository;
 import com.ccs.service.BulkImportService;
-import com.ccs.utility.ApiResponse;
+import com.ccs.utility.ConversionUtil;
 import com.ccs.utility.StatusMessage;
 
 /**
@@ -30,15 +32,10 @@ import com.ccs.utility.StatusMessage;
 @Service
 public class BulkImportServiceImpl extends StatusMessage implements BulkImportService {
 
-	@PersistenceContext
-	private EntityManager entityManager;
 
 	@Autowired
-	BulkImportDao bulkImportDao;
-	
-	@Autowired
 	BulkImportModulesRepository bulkImportModulesRepository;
-	
+
 	@Autowired
 	BulkImportInfoRepository bulkImportInfoRepository;
 
@@ -60,70 +57,94 @@ public class BulkImportServiceImpl extends StatusMessage implements BulkImportSe
 		return null;
 	}
 
-	@SuppressWarnings("unused")
-	@Override
+	//@SuppressWarnings("unused")
 	//@Transactional
+	@Override
 	public Map<String, String> downloadFile(String fromURL, String toURL) {
 		Map<String, String> statusList = new HashMap<>();
-		List<BulkImportModulesEntity> bulkImportModulesEntitys = bulkImportDao.getAllBulkImportModules();
-		for (BulkImportModulesEntity bulkImportModulesEntity : bulkImportModulesEntitys) {
-			System.out.println("URL_NAME="+bulkImportModulesEntity.getModuleURLName()+", name="+bulkImportModulesEntity.getModuleName());
-			if (bulkImportModulesEntity.getModuleDataType() == 1) {
-				fromURL = fromURL + File.separator + "MasterData";
-				toURL = toURL + File.separator + "MasterData";
-			} else {
-				fromURL = fromURL + File.separator + "TransactionData";
-				toURL = toURL + File.separator + "TransactionData";
-			}
-        
-			fromURL = fromURL + File.separator + "DataFiles" + File.separator
-					+ bulkImportModulesEntity.getModuleURLName() + "_24/01/2020_seq_1";
-			toURL = toURL + File.separator + "DataFiles" + File.separator
-					+ bulkImportModulesEntity.getModuleURLName() + "_24/01/2020_seq_1";
-        
+		try {
+			String currentDate = new ConversionUtil().getDateDDMMYYString(new Date());
+			List<BulkImportModulesEntity> bulkImportModulesEntitys = bulkImportModulesRepository.getAllBulkImportModules();
 			
-			String jsonFileName = bulkImportModulesEntity.getModuleURLName() + "_24/01/2020_seq_1";
-			String remarks = null;
-			Date processDate = null;
-			Date uploadDate = null;
-			int result = 1;
-			int status = 1;
-			boolean transferFlag = false;
-			// code for copy file from "fromURL" to "toURL" and return true/false
-        
-			if (!transferFlag) {
-				BulkImportInfoEntity entity = new BulkImportInfoEntity();
-				entity.setFileName(jsonFileName);
-				entity.setProcessDate(processDate);
-				entity.setRemarks(remarks);
-				entity.setResult(result);
-				entity.setStatus(status);
-				entity.setUploadDate(uploadDate);
-				entity.setBulkImportModulesEntity(bulkImportModulesEntity);
-				/*
-				BulkImportModulesEntity ModulesEntity=	bulkImportModulesRepository.getOne((long) 1);
-				BulkImportModulesEntity m=	bulkImportModulesRepository.getBymoduleName(bulkImportModulesEntity.getModuleName());
-				System.out.println("module name="+m.getModuleURLName());
-				*/
+			for (BulkImportModulesEntity bulkImportModulesEntity : bulkImportModulesEntitys) {
 				
-				/*
-				List<BulkImportInfoEntity> bulkImportInfoEntitie= bulkImportInfoRepository.getByBulkImportModulesEntity(ModulesEntity);
-				for(BulkImportInfoEntity moduleEntity:bulkImportInfoEntitie) {
-					System.out.println("remark="+moduleEntity.getRemarks());
+				String fromURL_ = fromURL;
+				String toURL_ = toURL;
+				String jsonFile = null;
+				String folderType = bulkImportModulesEntity.getModuleDataType() == 1 ? "MasterData" : "TransactionData";
+				fromURL_ = fromURL_ + File.separator + folderType + File.separator + "DataFiles";
+				toURL_ = toURL_ + File.separator + folderType + File.separator + "DataFiles";
+
+				File toURL_Folder = new File(toURL_);
+				if (!toURL_Folder.exists()) {
+					toURL_Folder.mkdirs();
 				}
-            	*/
-				ApiResponse apiResponse = 	bulkImportDao.addBulkImportInfo(entity);
-			  //if(apiResponse.getSuccess())
-				if (1==2) 
-				{
-					statusList.put(jsonFileName, apiResponse.getMessage());
+
+				FilenameFilter filter = new FilenameFilter() {
+					public boolean accept(File dir, String name) {
+						return name.startsWith(bulkImportModulesEntity.getModuleURLName() + "_" + currentDate);
+					}
+				};
+				String[] children = new File(fromURL_).list(filter);
+				if (children == null) {
+					statusList.put(fromURL_, INVALID_DIRECTORY);
 				} else {
-					statusList.put(jsonFileName, DOCUMENT_UPLOADED_SUCCESSFULLY_MESSAGE);
+					for (int i = 0; i < children.length; i++) {
+						String filename = children[i];
+						jsonFile = filename;
+					}
 				}
-				statusList.put(jsonFileName, DOCUMENT_UPLOADED_SUCCESSFULLY_MESSAGE);
-			} else {
-				statusList.put(jsonFileName, FILE_TRANSFER_FAILD_MESSAGE);
+				
+				fromURL_ += File.separator + jsonFile;
+				toURL_ += File.separator + jsonFile;
+				Path src = Paths.get(fromURL_);
+				Path dest = Paths.get(toURL_);
+				File existFromURL_ = new File(fromURL_);
+				File existToURL_ = new File(toURL_);
+				
+				if (existFromURL_.exists() && !existToURL_.exists()) {
+					Files.copy(src, dest);
+					int i = 0;
+					while (!FileUtils.contentEquals(new File(fromURL_), new File(toURL_)) && i < 5) {
+						Files.deleteIfExists(dest);
+						Files.copy(src, dest);
+						i++;
+					}
+					if (existToURL_.exists()) {
+						BulkImportInfoEntity entity = new BulkImportInfoEntity();
+						entity.setFileName(jsonFile);
+						entity.setProcessDate(new Date());
+						entity.setRemarks(FileUtils.contentEquals(new File(fromURL_), new File(toURL_)) == true
+								? FILE_DOWNLOADED_MESSAGE
+								: INCOMPLETE_DOWNLOAD_MESSAGE);
+						entity.setResult(0);
+						entity.setStatus(1);
+						entity.setUploadDate(new Date());
+						entity.setActive(true);
+						entity.setBulkImportModulesEntity(bulkImportModulesEntity);
+						String unloadedJsonFile = null;
+						
+						unloadedJsonFile = bulkImportInfoRepository.saveAndFlush(entity).getFileName();
+						if (unloadedJsonFile != null) {
+							statusList.put(bulkImportModulesEntity.getModuleURLName(), RECORD_INSERT_SUCCESSFULLY_MESSAGE);
+						} else {
+							statusList.put(bulkImportModulesEntity.getModuleURLName(), DOCUMENT_UPLOADED_SUCCESSFULLY_MESSAGE);
+						}
+					} else {
+						statusList.put(bulkImportModulesEntity.getModuleURLName(), FILE_TRANSFER_FAILD_MESSAGE);
+					}
+				} else if (existToURL_.exists()) {
+					statusList.put(bulkImportModulesEntity.getModuleURLName(), FILE_ALREADY_EXIST_MESSAGE);
+				} else if (!existFromURL_.exists()) {
+					statusList.put(bulkImportModulesEntity.getModuleURLName(), FILE_NOT_EXIST_ON_SERVER_MESSAGE);
+				} else {
+					statusList.put(bulkImportModulesEntity.getModuleURLName(), SOMETHING_WENTS_WRONG_MESSAGE);
+				}
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}catch (Exception e) {
+			e.printStackTrace();
 		}
 		return statusList;
 	}
@@ -133,8 +154,5 @@ public class BulkImportServiceImpl extends StatusMessage implements BulkImportSe
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	
- 
 
 }

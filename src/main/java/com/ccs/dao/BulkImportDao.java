@@ -14,7 +14,7 @@ import com.ccs.utility.ApiResponse;
  */
 public interface BulkImportDao {
 	
-	public List<BulkImportModulesEntity> getAllBulkImportModules();
+	public List<BulkImportModulesEntity> getAllBulkImportModules1();
 	
 	public ApiResponse addBulkImportInfo(BulkImportInfoEntity bulkImportInfoEntity);
 
