@@ -1,6 +1,7 @@
 package com.ccs.entity;
 
-import java.io.Serializable;
+
+import java.util.Calendar;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,7 +12,9 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-import org.springframework.data.jpa.domain.AbstractPersistable;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
 
 /**
  * @author Arvind Maurya
@@ -19,13 +22,13 @@ import org.springframework.data.jpa.domain.AbstractPersistable;
  * @copyright 2020
  *
  */
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "modules_type")
 @NamedQueries({
-	@NamedQuery(name="BulkImportModulesEntity.getAllBulkImportModules", query = "SELECT m FROM BulkImportModulesEntity m WHERE m.status=true order by m.priority")
+	@NamedQuery(name="BulkImportModulesEntity.getAllBulkImportModules", query = "SELECT m FROM BulkImportModulesEntity m WHERE m.active=true order by m.priority")
 })
-public class BulkImportModulesEntity extends AbstractPersistable<Long> implements Serializable {
+public class BulkImportModulesEntity {
+
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,10 +50,44 @@ public class BulkImportModulesEntity extends AbstractPersistable<Long> implement
 	@Column(name = "priority")
 	private int priority;
 
-	@Column(name = "status")
-	private boolean status;
-
+	@Column(name = "active")
+	private boolean active;
 	
+	@CreatedDate
+	private Calendar creationDate;
+	
+	/**
+	 * @return the active
+	 */
+	public boolean isActive() {
+		return active;
+	}
+
+
+	/**
+	 * @param active the active to set
+	 */
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+
+	/**
+	 * @return the creationDate
+	 */
+	public Calendar getCreationDate() {
+		return creationDate;
+	}
+
+
+	/**
+	 * @param creationDate the creationDate to set
+	 */
+	public void setCreationDate(Calendar creationDate) {
+		this.creationDate = creationDate;
+	}
+
+
 	public BulkImportModulesEntity() {
 		super();
 	}
@@ -64,16 +101,7 @@ public class BulkImportModulesEntity extends AbstractPersistable<Long> implement
 	 * @param priority
 	 * @param status
 	 */
-	public BulkImportModulesEntity(String moduleName, String moduleURLName, String structure, int moduleDataType,
-			int priority, boolean status) {
-		super();
-		this.moduleName = moduleName;
-		this.moduleURLName = moduleURLName;
-		this.structure = structure;
-		this.moduleDataType = moduleDataType;
-		this.priority = priority;
-		this.status = status;
-	}
+
 
 
 	/**
@@ -159,28 +187,5 @@ public class BulkImportModulesEntity extends AbstractPersistable<Long> implement
 	public void setPriority(int priority) {
 		this.priority = priority;
 	}
-
-	/**
-	 * @return the status
-	 */
-	public boolean isStatus() {
-		return status;
-	}
-
-	/**
-	 * @param status the status to set
-	 */
-	public void setStatus(boolean status) {
-		this.status = status;
-	}
-
-	@Override
-	public String toString() {
-		return "BulkImportModulesEntity [id=" + id + ", moduleName=" + moduleName + ", structure=" + structure
-				+ ", moduleDataType=" + moduleDataType + ", priority=" + priority + ", status=" + status + "]";
-	}
-
-
-	
-	
+ 
 }

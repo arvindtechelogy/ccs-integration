@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ccs.service.BulkImportService;
+import com.ccs.utility.Variable;
 
 /**
  * @author Arvind Maurya
@@ -18,14 +19,16 @@ import com.ccs.service.BulkImportService;
  */
 @RestController
 @RequestMapping("/bulk-import")
-public class BulkImportController {
+public class BulkImportController extends Variable{
 
 	@Autowired
 	BulkImportService bulkImportService;
 
+	
 	@GetMapping("/download-file")
 	public ResponseEntity<?> downloadfile() throws IOException {
-		return ResponseEntity.ok(bulkImportService.downloadFile("FROM_URL", "TO_URL"));
+		return ResponseEntity.ok(bulkImportService.downloadFile(FROM_URL, TO_URL));
 	}
-
+	
+	
 }
